@@ -1,107 +1,117 @@
-# PicoCalc + WebMite Quickstart (a.k.a. “yes, you *can* turn that tiny calculator into a tiny web computer”)
+# PicoCalc + WebMite Quickstart
 
-This README gets you from “staring at a Pico 2W and a calculator case” to “serving MMBasic from a browser.” It’s opinionated, trimmed of fluff, and packed with links.
+*(now with MMEdit, so you don’t have to suffer raw serial uploads)*
+
+This README gets you from “Pico 2W in a calculator case” to “MMBasic in the browser,” plus a clean workflow using **MMEdit** for editing and file transfer.
 
 ---
 
 ## What is this?
 
-* **PicoCalc**: A pocketable calculator-style device powered by a Raspberry Pi Pico / Pico W running **MMBasic** (the “PicoMite” port). It’s basically a tiny stand-alone BASIC computer with GPIO.
-  • Reference: **[PicoCalc MMBasic page](https://michaeladcock.info/temp/PicoCalc_MMBasic.html)**
+* **PicoCalc**: A pocketable calculator-style device using a Raspberry Pi Pico/Pico W running **MMBasic**.
+  → **[PicoCalc MMBasic page](https://michaeladcock.info/temp/PicoCalc_MMBasic.html)**
 
-* **PicoMite / WebMite**: Geoff Graham’s MMBasic firmware for the Raspberry Pi Pico family.
-  • User manual: **[PicoMite User Manual (PDF)](https://geoffg.net/Downloads/picomite/PicoMite_User_Manual.pdf)**
-  • Firmware bundle: **[PicoMite_Firmware.zip](https://geoffg.net/Downloads/picomite/PicoMite_Firmware.zip)**
-  • WebMite overview & docs: **[WebMite](https://geoffg.net/webmite.html)**
+* **PicoMite / WebMite**: Geoff Graham’s MMBasic firmware for the Pico family; WebMite adds a browser UI.
+  → **[PicoMite User Manual (PDF)](https://geoffg.net/Downloads/picomite/PicoMite_User_Manual.pdf)**
+  → **[WebMite overview](https://geoffg.net/webmite.html)**
+  → **[PicoMite_Firmware.zip (UF2s)](https://geoffg.net/Downloads/picomite/PicoMite_Firmware.zip)**
 
-**Goal:** Put **WebMite** on a **Raspberry Pi Pico 2W**, drop it into a PicoCalc build, and use a browser to talk to MMBasic.
+* **MMEdit**: A purpose-built MMBasic editor + file manager + terminal for Windows (works great for PicoMite).
+  → **[MMEdit](https://geoffg.net/mmedit.html)**
 
----
-
-## Hardware you’ll want
-
-* Raspberry Pi **Pico 2W** (the Wi-Fi variant is required for WebMite).
-* Your **PicoCalc** build (screen, keypad, power—whatever kit/variant you’re using).
-* USB cable (data capable).
-* A computer with a browser and a serial terminal (for first-boot config if needed).
+**Goal:** Flash **WebMite** on a **Pico 2W**, drop it into your PicoCalc, access MMBasic in a browser, and use **MMEdit** for real editing, transfers, and file management.
 
 ---
 
-## Firmware flashing (drag-and-drop, no wizard hats required)
+## Hardware
 
-1. **Download firmware**
-   Grab Geoff’s firmware pack: **[PicoMite_Firmware.zip](https://geoffg.net/Downloads/picomite/PicoMite_Firmware.zip)**
-   Inside you’ll find UF2 files for different targets. Use the one matching **Pico W / WebMite** (the filename typically mentions “PicoW” or “WebMite”).
-
-2. **Boot the Pico 2W into USB mode**
-
-   * Hold the **BOOTSEL** button on the Pico.
-   * Plug it into your computer via USB.
-   * Release BOOTSEL when a new drive (RPI-RP2) appears.
-
-3. **Flash it**
-
-   * Drag the correct **.uf2** onto the RPI-RP2 drive.
-   * The Pico reboots itself into WebMite/MMBasic.
-
-> If you’re building the **PicoCalc**, see **[PicoCalc MMBasic page](https://michaeladcock.info/temp/PicoCalc_MMBasic.html)** for wiring, display, and key matrix details.
+* Raspberry Pi **Pico 2W** (Wi-Fi variant required for WebMite)
+* Your **PicoCalc** build (screen, keypad, power)
+* USB data cable
+* A computer (Windows recommended for MMEdit)
 
 ---
 
-## First contact: console & browser
+## Flash the firmware (UF2 drag-and-drop)
 
-* **Serial console (optional but handy):**
-  Use a terminal at **115200 8N1** to watch boot logs, set options, and type MMBasic directly.
+1. Download: **[PicoMite_Firmware.zip](https://geoffg.net/Downloads/picomite/PicoMite_Firmware.zip)**
+   Pick the **Pico W / WebMite** UF2 inside.
 
-* **Web UI (the “WebMite” bit):**
-  After boot, WebMite starts an access point or joins your Wi-Fi (depending on `OPTION WIFI` you set).
+2. Hold **BOOTSEL**, plug in Pico 2W (RPI-RP2 drive appears), drop the UF2 on it.
+   It reboots into WebMite/MMBasic.
 
-  * If AP mode: connect your computer/phone to the Pico’s SSID, then browse to the default IP (see boot messages).
-  * If STA mode: set credentials and join your network:
-
-    ```basic
-    OPTION WIFI "YourSSID","YourPassphrase"
-    SAVE
-    REBOOT
-    ```
-  * Now hit the device’s IP in your browser for the WebMite page.
-    Full details live here: **[WebMite docs](https://geoffg.net/webmite.html)**
+**PicoCalc wiring & display setup:** see **[PicoCalc MMBasic page](https://michaeladcock.info/temp/PicoCalc_MMBasic.html)** and the **User Manual** for `OPTION LCDPANEL` and pin mappings.
 
 ---
 
-## MMBasic essentials (two minutes to competence)
+## First contact: serial + browser
 
-* **Edit/run code:**
+* **Serial (helpful for first setup):** 115200 8N1 on the Pico’s COM port.
+* **Wi-Fi setup (STA):**
 
   ```basic
-  NEW
-  10 PRINT "Hello PicoCalc!"
-  20 GOTO 10
-  RUN
+  OPTION WIFI "YourSSID","YourPassphrase"
+  SAVE
+  REBOOT
   ```
-* **Stop a running program:** Press **Ctrl+C** (or the on-device key mapped to break).
-* **List / save / load:**
+
+  Then check your IP:
 
   ```basic
-  LIST
-  SAVE "main.bas"
-  LOAD "main.bas"
+  PRINT MM.INFO(IP$)
   ```
-* **GPIO taste test:**
-
-  ```basic
-  PIN(25) = 1    ' blink onboard LED (check your PicoCalc wiring)
-  PAUSE 500
-  PIN(25) = 0
-  ```
-
-Everything else is in the **[PicoMite User Manual](https://geoffg.net/Downloads/picomite/PicoMite_User_Manual.pdf)**. It’s surprisingly readable.
+* **Web UI:** Hit that IP in a browser for the WebMite page.
+  Details: **[WebMite](https://geoffg.net/webmite.html)**
 
 ---
 
-## The “prompt thing” (turn PicoCalc into a tiny command runner)
+## Develop faster with MMEdit (editor, file transfer, file manager)
 
-You can make a lightweight, text-prompt front end—type commands on the keypad or over the web console, dispatch little utilities, and print results. Here’s a minimal pattern you can riff on:
+**MMEdit** removes the pain of manual uploads and gives you syntax-highlighting, a serial console, and on-device file management.
+
+1. **Install MMEdit:**
+   → **[MMEdit download & docs](https://geoffg.net/mmedit.html)**
+
+2. **Target & connection:**
+
+   * Launch MMEdit → set the **Target** to **PicoMite** (or PicoMiteVGA if that’s your build).
+   * **Connection:** choose the Pico’s **COM port** at **115200** baud.
+   * Click **Connect** (you’ll see the MMBasic prompt in MMEdit’s terminal pane).
+
+3. **Edit & send code:**
+
+   * Open or write your `.bas` in MMEdit’s editor.
+   * Use **Send to MMBasic** (or **File → Send**) to upload the current program.
+   * You can also **Save As** directly to the device using the **File Manager**.
+
+4. **Manage files on the Pico:**
+
+   * MMEdit’s **File Manager** lets you browse the Pico’s flash, upload/download, delete, and rename files.
+   * Typical pattern:
+
+     * Save your program as `AUTORUN.BAS` on the device.
+     * In the console:
+
+       ```basic
+       OPTION AUTORUN ON
+       SAVE
+       REBOOT
+       ```
+     * Now it boots straight into your app.
+
+5. **Terminal convenience:**
+
+   * Use MMEdit’s terminal to `RUN`, `LIST`, `FILES`, etc.
+   * **Ctrl+C** stops a running program.
+   * Great for quick `OPTION` changes and debugging boot messages.
+
+> Note: For WebMite, you’ll still love MMEdit for faster iteration over USB serial. Use the Web UI for remote convenience and demos, MMEdit for day-to-day dev speed.
+
+---
+
+## Minimal “prompt thing” (command router)
+
+Make a tiny command runner so the keypad or web console can trigger utilities:
 
 ```basic
 OPTION AUTORUN ON
@@ -118,7 +128,6 @@ DO
   IF cmd$ = "net" THEN GOSUB NetInfo
   IF cmd$ = "temp" THEN GOSUB Temp
   IF cmd$ = "about" THEN GOSUB About
-
 LOOP
 
 Help:
@@ -130,7 +139,6 @@ Help:
 RETURN
 
 PinCmd:
-  ' e.g., "pin 25 1"
   DIM parts$() = SPLIT(cmd$," ")
   IF UBOUND(parts$) <> 2 THEN PRINT "usage: pin <num> <0|1>": RETURN
   p = VAL(parts$(1)) : v = VAL(parts$(2))
@@ -139,7 +147,6 @@ PinCmd:
 RETURN
 
 NetInfo:
-  ' WebMite exposes info via MM.INFO and OPTIONs
   PRINT "IP: "; MM.INFO(IP$)
   PRINT "MAC:"; MM.INFO(MAC$)
 RETURN
@@ -154,66 +161,47 @@ About:
 RETURN
 ```
 
-Drop this into `prompt.bas`, `SAVE`, then `OPTION AUTORUN ON` if you want it to boot straight into your prompt.
+Upload with MMEdit (Send → Save on device as `prompt.bas`), then:
+
+```basic
+OPTION AUTORUN ON
+LOAD "prompt.bas"
+SAVE
+REBOOT
+```
 
 ---
 
-## Gotchas & fixes (so you don’t rage-reflash at 2 a.m.)
+## Gotchas (quick fixes)
 
-* **“It boots but I don’t see Wi-Fi.”**
-  Set Wi-Fi credentials explicitly:
-
-  ```basic
-  OPTION WIFI "YourSSID","YourPassphrase"
-  SAVE : REBOOT
-  ```
-
-  Then check `MM.INFO(IP$)`.
-
-* **Display looks scrambled.**
-  Verify your PicoCalc display settings (driver, pins, rotations) per **[PicoCalc MMBasic page](https://michaeladcock.info/temp/PicoCalc_MMBasic.html)** and the **User Manual**’s `OPTION LCDPANEL`.
-
-* **Programs won’t autorun.**
-  Ensure the filename and option:
-
-  ```basic
-  SAVE "AUTORUN.BAS"
-  OPTION AUTORUN ON
-  REBOOT
-  ```
-
-* **Lockups / weirdness.**
-  Power matters. Give the PicoCalc clean 5V (or solid battery + regulator). USB hubs can be noisy gremlins.
+* **No Wi-Fi / no web page:** set `OPTION WIFI`, `SAVE`, `REBOOT`; verify with `MM.INFO(IP$)`.
+* **Scrambled display:** confirm your `OPTION LCDPANEL` and pins per **PicoCalc MMBasic page** and the **User Manual**.
+* **Autorun not working:** ensure filename is `AUTORUN.BAS` or you’ve `OPTION AUTORUN ON`.
 
 ---
 
-## “Dumb-ass ideas” (a.k.a. excellent excuses to tinker)
+## “Dumb-ass ideas” to ship before lunch
 
-* **Web-Prompt Launcher:** A single-page WebMite UI with buttons mapped to `PRINT`ed commands that your `prompt.bas` parses. Tap “Scan Keys,” “LED Test,” “Log Sensor,” etc., from your phone.
+* **Web-Prompt buttons:** Tiny WebMite page with buttons that `PRINT` commands your prompt parses.
+* **Pocket RF notes:** Log BSSIDs + timestamps to flash and export via MMEdit/File Manager.
+* **Image-to-MMBasic logo:** Boot splash rendered with `LINE`/`PIXEL` so you need zero image files.
+* **Ops deck:** Keypad modes—normal calc vs. ops panel (relay toggle, IP status, note macro).
+* **Field CSV logger:** Sample analog pins, draw a sparkline, save CSV; pull the file with MMEdit.
 
-* **Pocket RF Notes:** Use the keypad to tag Wi-Fi BSSIDs you see in the field; store timestamps and simple notes to flash. Later, dump via the web console and correlate in Splunk.
-
-* **Image-to-MMBasic art:** Convert small images into MMBasic `LINE`/`PIXEL` draws for the PicoCalc display. Great for boot logos and status glyphs.
-
-* **Calculator-plus:** Keep normal calc functions, but add “Ops” mode where the keypad becomes a command deck for your home lab (send serial strings, toggle GPIO relays, show IP/health).
-
-* **Offline Field Logger:** Sample a couple of analog pins, show sparkline charts on the LCD, save CSV to flash, and serve downloads via WebMite.
-
-Each of these is tiny on purpose. Build a 10-minute prototype, then harden what’s fun.
+Keep them small. Ten-minute prototypes are how empires begin.
 
 ---
 
-## Reference links (all the things)
+## References (click these; they’re the good stuff)
 
 * **PicoCalc MMBasic page:** [https://michaeladcock.info/temp/PicoCalc_MMBasic.html](https://michaeladcock.info/temp/PicoCalc_MMBasic.html)
 * **PicoMite User Manual (PDF):** [https://geoffg.net/Downloads/picomite/PicoMite_User_Manual.pdf](https://geoffg.net/Downloads/picomite/PicoMite_User_Manual.pdf)
 * **WebMite overview & docs:** [https://geoffg.net/webmite.html](https://geoffg.net/webmite.html)
 * **PicoMite firmware bundle (UF2s):** [https://geoffg.net/Downloads/picomite/PicoMite_Firmware.zip](https://geoffg.net/Downloads/picomite/PicoMite_Firmware.zip)
+* **MMEdit editor + file manager:** [https://geoffg.net/mmedit.html](https://geoffg.net/mmedit.html)
 
 ---
 
-## Next moves
+### Next moves
 
-* Flash WebMite on the Pico 2W, confirm the web UI, and drop in the `prompt.bas` router.
-* Once your display and keypad are talking, wire a couple of “Ops” commands—LED test, IP status, quick notes—to prove the loop.
-* When you’re ready, we can harden this into a tidy repo with a `docs/` folder, a reproducible UF2 pick, and a minimal test matrix for common PicoCalc builds.
+Flash WebMite, confirm the web UI, then switch to MMEdit for editing, uploads, and file management. After that, we can lock this into a repo with a tested MMEdit profile, example `prompt.bas`, and a short troubleshooting matrix for common PicoCalc displays.
