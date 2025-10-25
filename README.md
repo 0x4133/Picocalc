@@ -48,6 +48,7 @@ This README gets you from “Pico 2W in a calculator case” to “MMBasic in th
 
 * **Serial (helpful for first setup):** 115200 8N1 on the Pico’s COM port.
 * **Wi-Fi setup (STA):**
+* **Wifi needs to be wpa2 or some older routers would work. **
 
   ```basic
   OPTION WIFI "YourSSID","YourPassphrase"
